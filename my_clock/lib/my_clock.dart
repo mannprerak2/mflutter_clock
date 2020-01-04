@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:intl/intl.dart';
@@ -105,10 +106,25 @@ class _MyClockState extends State<MyClock> {
       child: Center(
         child: DefaultTextStyle(
           style: defaultStyle,
-          child: Stack(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Positioned(left: offset, top: 0, child: Text(hour)),
-              Positioned(right: offset, bottom: offset, child: Text(minute)),
+              for (var i = 0; i < 4; i++)
+                Container(
+                  width: MediaQuery.of(context).size.width/5,
+                  decoration:
+                      BoxDecoration(border: Border.all(color: Colors.red)),
+                  child: AspectRatio(
+                    aspectRatio: 30 / 35,
+                    child: FlareActor(
+                      'assets/Digits-Stick.flr',
+                      animation: 'idle',
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              // Positioned(left: offset, top: 0, child: Text(hour)),
+              // Positioned(right: offset, bottom: offset, child: Text(minute)),
             ],
           ),
         ),
