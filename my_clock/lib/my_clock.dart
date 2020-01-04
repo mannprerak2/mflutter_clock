@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:intl/intl.dart';
@@ -37,6 +38,8 @@ class MyClock extends StatefulWidget {
 class _MyClockState extends State<MyClock> {
   DateTime _dateTime = DateTime.now();
   Timer _timer;
+
+  FlareController c1,c2,c3,c4;
 
   @override
   void initState() {
@@ -109,25 +112,59 @@ class _MyClockState extends State<MyClock> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              for (var i = 0; i < 4; i++)
-                Container(
-                  width: MediaQuery.of(context).size.width/5,
-                  decoration:
-                      BoxDecoration(border: Border.all(color: Colors.red)),
-                  child: AspectRatio(
-                    aspectRatio: 30 / 35,
-                    child: FlareActor(
-                      'assets/Digits-Stick.flr',
-                      animation: 'idle',
-                      color: Colors.black,
-                    ),
-                  ),
+              FlareContainer(
+                child: FlareActor(
+                  'assets/digits.flr',
+                  animation: '01',
+                  color: Colors.black,
                 ),
+              ),
+              FlareContainer(
+                child: FlareActor(
+                  'assets/digits.flr',
+                  animation: '12',
+                  color: Colors.black,
+                ),
+              ),
+              FlareContainer(
+                child: FlareActor(
+                  'assets/digits.flr',
+                  animation: '34',
+                  color: Colors.black,
+                ),
+              ),
+              FlareContainer(
+                child: FlareActor(
+                  'assets/digits.flr',
+                  animation: '56',
+                  color: Colors.black,
+                ),
+              ),
               // Positioned(left: offset, top: 0, child: Text(hour)),
               // Positioned(right: offset, bottom: offset, child: Text(minute)),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class FlareContainer extends StatelessWidget {
+  final Widget child;
+  const FlareContainer({
+    Key key,
+    this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width / 5,
+      decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+      child: AspectRatio(
+        aspectRatio: 30 / 35,
+        child: child,
       ),
     );
   }
