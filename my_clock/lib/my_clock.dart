@@ -94,19 +94,51 @@ class _MyClockState extends State<MyClock> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Stack(
+      alignment: Alignment.center,
       children: <Widget>[
-        Expanded(child: Digit((_, model) => model.h1)),
-        Expanded(child: Digit((_, model) => model.h2)),
-        Text(":"),
-        Expanded(child: Digit((_, model) => model.m1)),
-        Expanded(child: Digit((_, model) => model.m2)),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Digit((_, model) => model.h1),
+            ),
+            Expanded(child: Digit((_, model) => model.h2)),
+            Text(
+              ":",
+              style: TextStyle(fontSize: MediaQuery.of(context).size.width / 7),
+            ),
+            Expanded(child: Digit((_, model) => model.m1)),
+            Expanded(child: Digit((_, model) => model.m2)),
+          ],
+        ),
+        Positioned(
+          left: 0,
+          bottom: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: DefaultTextStyle(
+              style: TextStyle(
+                fontSize: 10
+              ),
+                          child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.model.temperatureString),
+                  Text(
+                      "(${widget.model.lowString} - ${widget.model.highString})"),
+                  Text(widget.model.weatherString),
+                  Text(widget.model.location),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
-    // return Container(
-    //   child: Digit((_, model) => model.s2),
-    // );
   }
 }

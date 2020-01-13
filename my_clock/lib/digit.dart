@@ -33,7 +33,7 @@ class _DigitState extends State<Digit> {
   Widget build(BuildContext context) {
     if (_image != null) {
       return ColorFiltered(
-        colorFilter: Theme.of(context).brightness == Brightness.light
+        colorFilter: Theme.of(context).brightness != Brightness.light
             ? ColorFilter.matrix([
                 //R  G   B    A  Const
                 -1, 0, 0, 0, 255, //
@@ -50,7 +50,7 @@ class _DigitState extends State<Digit> {
               ]),
         child: Container(
           // decoration: BoxDecoration(
-          //   border: Border.all(color: Colors.blue, width: 10)
+          //   border: Border.all(color: Colors.red)
           // ),
           child: FittedBox(
             fit: BoxFit.cover,
@@ -83,7 +83,7 @@ class DigitPainter extends CustomPainter {
             text: TextSpan(
               text: digit.toString(),
               style: TextStyle(
-                fontSize: 1000,
+                fontSize: 1150,
                 color: Colors.white,
               ),
             ),
@@ -98,7 +98,7 @@ class DigitPainter extends CustomPainter {
     canvas.saveLayer(rect, Paint()..blendMode = BlendMode.dstATop);
     textPainter
       ..layout(minWidth: size.width)
-      ..paint(canvas, Offset(0, -150));
+      ..paint(canvas, Offset(0, -220));
     canvas.restore();
   }
 
