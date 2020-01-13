@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_clock_helper/model.dart';
+import 'package:my_clock/digit.dart';
 import 'package:my_clock/time_model.dart';
 import 'package:provider/provider.dart';
-import 'dart:ui' as ui;
 
 enum _Element {
   background,
@@ -28,7 +26,6 @@ final _darkTheme = {
 
 class MyClock extends StatefulWidget {
   final ClockModel model;
-  static bool isLight = true;
   const MyClock(
     this.model, {
     Key key,
@@ -97,97 +94,19 @@ class _MyClockState extends State<MyClock> {
 
   @override
   Widget build(BuildContext context) {
-    MyClock.isLight = Theme.of(context).brightness == Brightness.light;
-    return Container(
-      child: ColorFiltered(
-        colorFilter: !MyClock.isLight
-            ? ColorFilter.matrix([
-                //R  G   B    A  Const
-                -1, 0, 0, 0, 255, //
-                0, -1, 0, 0, 255, //
-                0, 0, -1, 0, 255, //
-                0, 0, 0, 1, 0, //
-              ])
-            : ColorFilter.matrix([
-                //R  G   B    A  Const
-                1, 0, 0, 0, 0,
-                0, 1, 0, 0, 0,
-                0, 0, 1, 0, 0,
-                0, 0, 0, 1, 0,
-              ]),
-        child: PaintHandler(),
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Expanded(child: Digit((_, model) => model.h1)),
+        Expanded(child: Digit((_, model) => model.h2)),
+        Text(":"),
+        Expanded(child: Digit((_, model) => model.m1)),
+        Expanded(child: Digit((_, model) => model.m2)),
+      ],
     );
+    // return Container(
+    //   child: Digit((_, model) => model.s2),
+    // );
   }
-}
-
-class PaintHandler extends StatefulWidget {
-  @override
-  _PaintHandlerState createState() => _PaintHandlerState();
-}
-
-class _PaintHandlerState extends State<PaintHandler> {
-  ui.Image _image;
-  @override
-  void initState() {
-    _loadImage();
-    super.initState();
-  }
-
-  _loadImage() async {
-    ByteData bd = await rootBundle.load("assets/words.jpg");
-    final Uint8List bytes = Uint8List.view(bd.buffer);
-    final ui.Codec codec = await ui.instantiateImageCodec(bytes);
-    final ui.Image image = (await codec.getNextFrame()).image;
-    setState(() => _image = image);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_image != null) {
-      return FittedBox(
-        fit: BoxFit.contain,
-        child: SizedBox(
-          width: _image.width.toDouble(),
-          height: _image.height.toDouble(),
-          child: CustomPaint(
-            painter: MyPainter(_image),
-          ),
-        ),
-      );
-    }
-    return Container();
-  }
-}
-
-class MyPainter extends CustomPainter {
-  final TextPainter textPainter;
-  final ui.Image image;
-
-  MyPainter(this.image)
-      : textPainter = TextPainter(
-            text: TextSpan(
-              text: "8",
-              style: TextStyle(
-                fontSize: 800,
-                color: Colors.white,
-              ),
-            ),
-            textDirection: TextDirection.ltr,
-            textAlign: TextAlign.center),
-        super();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Rect rect = Offset(0, 0) & size;
-    canvas.drawImage(image, Offset.zero, Paint());
-    canvas.saveLayer(rect, Paint()..blendMode = BlendMode.dstATop);
-    textPainter
-      ..layout(minWidth: size.width)
-      ..paint(canvas, Offset.zero);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(MyPainter oldDelegate) => true;
 }
