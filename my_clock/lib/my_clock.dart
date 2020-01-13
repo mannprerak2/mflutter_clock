@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:typed_data';
 
-import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_clock_helper/model.dart';
-import 'package:intl/intl.dart';
+import 'package:my_clock/time_model.dart';
+import 'package:provider/provider.dart';
+import 'dart:ui' as ui;
 
 enum _Element {
   background,
@@ -26,7 +28,7 @@ final _darkTheme = {
 
 class MyClock extends StatefulWidget {
   final ClockModel model;
-
+  static bool isLight = true;
   const MyClock(
     this.model, {
     Key key,
@@ -38,15 +40,18 @@ class MyClock extends StatefulWidget {
 class _MyClockState extends State<MyClock> {
   DateTime _dateTime = DateTime.now();
   Timer _timer;
-
-  FlareController c1,c2,c3,c4;
-
+  int oh1, oh2, om1, om2;
   @override
   void initState() {
     super.initState();
     widget.model.addListener(_updateModel);
-    _updateTime();
+
     _updateModel();
+
+    //because context is required by provider..
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateTime();
+    });
   }
 
   @override
@@ -71,101 +76,118 @@ class _MyClockState extends State<MyClock> {
   }
 
   void _updateTime() {
-    setState(() {
-      _dateTime = DateTime.now();
-      // Update once per minute
-      _timer = Timer(
-        Duration(minutes: 1) -
-            Duration(seconds: _dateTime.second) -
-            Duration(milliseconds: _dateTime.millisecond),
-        _updateTime,
-      );
-    });
+    _dateTime = DateTime.now();
+    //update once a second
+    _timer = Timer(
+      Duration(seconds: 1) - Duration(milliseconds: _dateTime.millisecond),
+      _updateTime,
+    );
+
+    // Update once per minute
+    // _timer = Timer(
+    //   Duration(minutes: 1) -
+    //       Duration(seconds: _dateTime.second) -
+    //       Duration(milliseconds: _dateTime.millisecond),
+    //   _updateTime,
+    // );
+
+    // update digits now
+    Provider.of<TimeModel>(context, listen: false).updateTime(_dateTime);
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).brightness == Brightness.light
-        ? _lightTheme
-        : _darkTheme;
-    final hour =
-        DateFormat(widget.model.is24HourFormat ? 'HH' : 'hh').format(_dateTime);
-    final minute = DateFormat('mm').format(_dateTime);
-    final fontSize = MediaQuery.of(context).size.width / 3.5;
-    final offset = -fontSize / 7;
-    final defaultStyle = TextStyle(
-      color: colors[_Element.text],
-      fontSize: fontSize,
-      shadows: [
-        Shadow(
-          blurRadius: 0,
-          color: colors[_Element.shadow],
-          offset: Offset(10, 0),
-        ),
-      ],
-    );
-
+    MyClock.isLight = Theme.of(context).brightness == Brightness.light;
     return Container(
-      child: Center(
-        child: DefaultTextStyle(
-          style: defaultStyle,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              FlareContainer(
-                child: FlareActor(
-                  'assets/digits.flr',
-                  animation: '01',
-                  color: Colors.black,
-                ),
-              ),
-              FlareContainer(
-                child: FlareActor(
-                  'assets/digits.flr',
-                  animation: '12',
-                  color: Colors.black,
-                ),
-              ),
-              FlareContainer(
-                child: FlareActor(
-                  'assets/digits.flr',
-                  animation: '34',
-                  color: Colors.black,
-                ),
-              ),
-              FlareContainer(
-                child: FlareActor(
-                  'assets/digits.flr',
-                  animation: '56',
-                  color: Colors.black,
-                ),
-              ),
-              // Positioned(left: offset, top: 0, child: Text(hour)),
-              // Positioned(right: offset, bottom: offset, child: Text(minute)),
-            ],
-          ),
-        ),
+      child: ColorFiltered(
+        colorFilter: !MyClock.isLight
+            ? ColorFilter.matrix([
+                //R  G   B    A  Const
+                -1, 0, 0, 0, 255, //
+                0, -1, 0, 0, 255, //
+                0, 0, -1, 0, 255, //
+                0, 0, 0, 1, 0, //
+              ])
+            : ColorFilter.matrix([
+                //R  G   B    A  Const
+                1, 0, 0, 0, 0,
+                0, 1, 0, 0, 0,
+                0, 0, 1, 0, 0,
+                0, 0, 0, 1, 0,
+              ]),
+        child: PaintHandler(),
       ),
     );
   }
 }
 
-class FlareContainer extends StatelessWidget {
-  final Widget child;
-  const FlareContainer({
-    Key key,
-    this.child,
-  }) : super(key: key);
+class PaintHandler extends StatefulWidget {
+  @override
+  _PaintHandlerState createState() => _PaintHandlerState();
+}
+
+class _PaintHandlerState extends State<PaintHandler> {
+  ui.Image _image;
+  @override
+  void initState() {
+    _loadImage();
+    super.initState();
+  }
+
+  _loadImage() async {
+    ByteData bd = await rootBundle.load("assets/words.jpg");
+    final Uint8List bytes = Uint8List.view(bd.buffer);
+    final ui.Codec codec = await ui.instantiateImageCodec(bytes);
+    final ui.Image image = (await codec.getNextFrame()).image;
+    setState(() => _image = image);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width / 5,
-      decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-      child: AspectRatio(
-        aspectRatio: 30 / 35,
-        child: child,
-      ),
-    );
+    if (_image != null) {
+      return FittedBox(
+        fit: BoxFit.contain,
+        child: SizedBox(
+          width: _image.width.toDouble(),
+          height: _image.height.toDouble(),
+          child: CustomPaint(
+            painter: MyPainter(_image),
+          ),
+        ),
+      );
+    }
+    return Container();
   }
+}
+
+class MyPainter extends CustomPainter {
+  final TextPainter textPainter;
+  final ui.Image image;
+
+  MyPainter(this.image)
+      : textPainter = TextPainter(
+            text: TextSpan(
+              text: "8",
+              style: TextStyle(
+                fontSize: 800,
+                color: Colors.white,
+              ),
+            ),
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.center),
+        super();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Rect rect = Offset(0, 0) & size;
+    canvas.drawImage(image, Offset.zero, Paint());
+    canvas.saveLayer(rect, Paint()..blendMode = BlendMode.dstATop);
+    textPainter
+      ..layout(minWidth: size.width)
+      ..paint(canvas, Offset.zero);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(MyPainter oldDelegate) => true;
 }
