@@ -100,7 +100,7 @@ class _MyClockState extends State<MyClock> {
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Expanded(
               child: Digit((_, model) => model.h1),
@@ -112,6 +112,14 @@ class _MyClockState extends State<MyClock> {
             ),
             Expanded(child: Digit((_, model) => model.m1)),
             Expanded(child: Digit((_, model) => model.m2)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 20,
+              child: Digit((_, model) => model.s1),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 20,
+              child: Digit((_, model) => model.s2),
+            ),
           ],
         ),
         Positioned(
@@ -119,22 +127,15 @@ class _MyClockState extends State<MyClock> {
           bottom: 0,
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: DefaultTextStyle(
-              style: TextStyle(
-                fontSize: 10
-              ),
-                          child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.model.temperatureString),
-                  Text(
-                      "(${widget.model.lowString} - ${widget.model.highString})"),
-                  Text(widget.model.weatherString),
-                  Text(widget.model.location),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.model.temperatureString),
+                Text(
+                    "(${widget.model.lowString} - ${widget.model.highString})"),
+                Text(widget.model.weatherString),
+                Text(widget.model.location),
+              ],
             ),
           ),
         ),
