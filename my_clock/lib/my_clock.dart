@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
+import 'package:my_clock/backgroud_animation.dart';
 import 'package:my_clock/digit.dart';
 import 'package:my_clock/time_model.dart';
 import 'package:my_clock/weather_icon.dart';
@@ -83,14 +84,6 @@ class _MyClockState extends State<MyClock> {
       _updateTime,
     );
 
-    // Update once per minute
-    // _timer = Timer(
-    //   Duration(minutes: 1) -
-    //       Duration(seconds: _dateTime.second) -
-    //       Duration(milliseconds: _dateTime.millisecond),
-    //   _updateTime,
-    // );
-
     // update digits now
     Provider.of<TimeModel>(context, listen: false).updateTime(_dateTime);
   }
@@ -109,25 +102,23 @@ class _MyClockState extends State<MyClock> {
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
+            BackgroundAnimation(),
             Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
+                Expanded(flex: 2, child: Digit((_, model) => model.h1)),
+                Expanded(flex: 2, child: Digit((_, model) => model.h2)),
                 Expanded(
-                  child: Digit((_, model) => model.h1),
+                  flex: 1,
+                  child: Digit(
+                    null,
+                    simpleString: ":",
+                  ),
                 ),
-                Expanded(child: Digit((_, model) => model.h2)),
-                Text(
-                  ":",
-                  style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width / 6,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? MyClock.lessDarkBlue
-                          : Colors.white),
-                ),
-                Expanded(child: Digit((_, model) => model.m1)),
-                Expanded(child: Digit((_, model) => model.m2)),
+                Expanded(flex: 2, child: Digit((_, model) => model.m1)),
+                Expanded(flex: 2, child: Digit((_, model) => model.m2)),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 20,
                   child: Digit((_, model) => model.s1),

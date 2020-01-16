@@ -8,8 +8,9 @@ import 'package:provider/provider.dart';
 
 class Digit extends StatefulWidget {
   final int Function(BuildContext, TimeModel) selector;
+  final String simpleString;
 
-  const Digit(this.selector, {Key key}) : super(key: key);
+  const Digit(this.selector, {Key key, this.simpleString}) : super(key: key);
   @override
   _DigitState createState() => _DigitState();
 }
@@ -23,7 +24,7 @@ class _DigitState extends State<Digit> {
   }
 
   _loadImage() async {
-    ByteData bd = await rootBundle.load("assets/words.jpg");
+    ByteData bd = await rootBundle.load("assets/words2.png");
     final Uint8List bytes = Uint8List.view(bd.buffer);
     final ui.Codec codec = await ui.instantiateImageCodec(bytes);
     final ui.Image image = (await codec.getNextFrame()).image;
@@ -63,13 +64,18 @@ class _DigitState extends State<Digit> {
             child: SizedBox(
               width: _image.width.toDouble(),
               height: _image.height.toDouble(),
-              child: Selector<TimeModel, int>(
-                selector: widget.selector,
-                builder: (_, digit, child) => CustomPaint(
-                  painter: DigitPainter(
-                      _image, digit, MediaQuery.of(context).size.width),
-                ),
-              ),
+              child: widget.simpleString != null
+                  ? CustomPaint(
+                        painter: DigitPainter(_image, widget.simpleString,
+                            MediaQuery.of(context).size.width),
+                      )
+                  : Selector<TimeModel, int>(
+                      selector: widget.selector,
+                      builder: (_, digit, child) => CustomPaint(
+                        painter: DigitPainter(_image, digit.toString(),
+                            MediaQuery.of(context).size.width),
+                      ),
+                    ),
             ),
           ),
         ),
@@ -82,13 +88,13 @@ class _DigitState extends State<Digit> {
 class DigitPainter extends CustomPainter {
   final TextPainter textPainter;
   final ui.Image image;
-  final int digit;
+  final String digit;
   final double fontSize;
 
   DigitPainter(this.image, this.digit, this.fontSize)
       : textPainter = TextPainter(
             text: TextSpan(
-              text: digit.toString(),
+              text: digit,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 1150,
