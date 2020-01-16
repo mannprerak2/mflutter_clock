@@ -34,20 +34,25 @@ class _DigitState extends State<Digit> {
   Widget build(BuildContext context) {
     if (_image != null) {
       return ColorFiltered(
-        colorFilter: Theme.of(context).brightness != Brightness.light
+        colorFilter: Theme.of(context).brightness == Brightness.light
             ? ColorFilter.matrix([
+                // invert image, convert white to invert of dark blue, invert image again
                 //R  G   B    A  Const
-                -1, 0, 0, 0, 255, //
-                0, -1, 0, 0, 255, //
-                0, 0, -1, 0, 255, //
+                1 - MyClock.lessDarkBlue.red / 255, 0, 0, 0,
+                MyClock.lessDarkBlue.red.toDouble(), //
+                0, 1 - MyClock.lessDarkBlue.green / 255, 0, 0,
+                MyClock.lessDarkBlue.green.toDouble(), //
+                0, 0, 1 - MyClock.lessDarkBlue.blue / 255, 0,
+                MyClock.lessDarkBlue.blue.toDouble(), //
                 0, 0, 0, 1, 0, //
               ])
             : ColorFilter.matrix([
+                // convert white to invert of darkBlue and then invert entire image again
                 //R  G   B    A  Const
-                1, 0, 0, 0, 0,
-                0, 1, 0, 0, 0,
-                0, 0, 1, 0, 0,
-                0, 0, 0, 1, 0,
+                -(255 - MyClock.darkBlue.red) / 255, 0, 0, 0, 255, //
+                0, -(255 - MyClock.darkBlue.green) / 255, 0, 0, 255, //
+                0, 0, -(255 - MyClock.darkBlue.blue) / 255, 0, 255, //
+                0, 0, 0, 1, 0, //
               ]),
         child: Container(
           child: FittedBox(
