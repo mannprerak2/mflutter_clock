@@ -25,6 +25,8 @@ final _darkTheme = {
 };
 
 class MyClock extends StatefulWidget {
+  static Color darkBlue = Color(0xFF001a33);
+  static Color lessDarkBlue = Color(0xFF004280);
   final ClockModel model;
   const MyClock(
     this.model, {
@@ -94,52 +96,67 @@ class _MyClockState extends State<MyClock> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Expanded(
-              child: Digit((_, model) => model.h1),
-            ),
-            Expanded(child: Digit((_, model) => model.h2)),
-            Text(
-              ":",
-              style: TextStyle(fontSize: MediaQuery.of(context).size.width / 7),
-            ),
-            Expanded(child: Digit((_, model) => model.m1)),
-            Expanded(child: Digit((_, model) => model.m2)),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 20,
-              child: Digit((_, model) => model.s1),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 20,
-              child: Digit((_, model) => model.s2),
-            ),
-          ],
-        ),
-        Positioned(
-          left: 0,
-          bottom: 0,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.model.temperatureString),
-                Text(
-                    "(${widget.model.lowString} - ${widget.model.highString})"),
-                Text(widget.model.weatherString),
-                Text(widget.model.location),
-              ],
+    return Container(
+      color: Theme.of(context).brightness == Brightness.light
+          ? Colors.white
+          : MyClock.darkBlue,
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Expanded(
+                child: Digit((_, model) => model.h1),
+              ),
+              Expanded(child: Digit((_, model) => model.h2)),
+              Text(
+                ":",
+                style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width / 7,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? MyClock.lessDarkBlue
+                        : Colors.white),
+              ),
+              Expanded(child: Digit((_, model) => model.m1)),
+              Expanded(child: Digit((_, model) => model.m2)),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 20,
+                child: Digit((_, model) => model.s1),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 20,
+                child: Digit((_, model) => model.s2),
+              ),
+            ],
+          ),
+          Positioned(
+            left: 0,
+            bottom: 0,
+            child: DefaultTextStyle(
+              style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? MyClock.lessDarkBlue
+                      : Colors.white),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.model.temperatureString),
+                    Text(
+                        "(${widget.model.lowString} - ${widget.model.highString})"),
+                    Text(widget.model.weatherString),
+                    Text(widget.model.location),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

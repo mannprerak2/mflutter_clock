@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:my_clock/my_clock.dart';
 import 'package:my_clock/time_model.dart';
 import 'package:provider/provider.dart';
 
@@ -49,9 +50,6 @@ class _DigitState extends State<Digit> {
                 0, 0, 0, 1, 0,
               ]),
         child: Container(
-          // decoration: BoxDecoration(
-          //   border: Border.all(color: Colors.red)
-          // ),
           child: FittedBox(
             fit: BoxFit.cover,
             child: SizedBox(
@@ -60,7 +58,8 @@ class _DigitState extends State<Digit> {
               child: Selector<TimeModel, int>(
                 selector: widget.selector,
                 builder: (_, digit, child) => CustomPaint(
-                  painter: DigitPainter(_image, digit, MediaQuery.of(context).size.width),
+                  painter: DigitPainter(
+                      _image, digit, MediaQuery.of(context).size.width),
                 ),
               ),
             ),
