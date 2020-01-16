@@ -55,6 +55,9 @@ class _DigitState extends State<Digit> {
                 0, 0, 0, 1, 0, //
               ]),
         child: Container(
+          // decoration: BoxDecoration(
+          //   border: Border.all(color: Colors.red)
+          // ),
           child: FittedBox(
             fit: BoxFit.cover,
             child: SizedBox(
@@ -87,6 +90,7 @@ class DigitPainter extends CustomPainter {
             text: TextSpan(
               text: digit.toString(),
               style: TextStyle(
+                fontWeight: FontWeight.w900,
                 fontSize: 1150,
                 color: Colors.white,
               ),

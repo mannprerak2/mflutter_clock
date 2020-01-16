@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:my_clock/digit.dart';
 import 'package:my_clock/time_model.dart';
+import 'package:my_clock/weather_icon.dart';
 import 'package:provider/provider.dart';
 
 enum _Element {
@@ -96,11 +97,12 @@ class _MyClockState extends State<MyClock> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: ThemeData(
-        // fontFamily: ''
-      ),
-          child: Container(
+    return DefaultTextStyle(
+      style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.light
+              ? MyClock.lessDarkBlue
+              : Colors.white),
+      child: Container(
         color: Theme.of(context).brightness == Brightness.light
             ? Colors.white
             : MyClock.darkBlue,
@@ -119,7 +121,7 @@ class _MyClockState extends State<MyClock> {
                 Text(
                   ":",
                   style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width / 7,
+                      fontSize: MediaQuery.of(context).size.width / 6,
                       color: Theme.of(context).brightness == Brightness.light
                           ? MyClock.lessDarkBlue
                           : Colors.white),
@@ -141,6 +143,7 @@ class _MyClockState extends State<MyClock> {
               bottom: 0,
               child: DefaultTextStyle(
                 style: TextStyle(
+                    fontWeight: FontWeight.w900,
                     color: Theme.of(context).brightness == Brightness.light
                         ? MyClock.lessDarkBlue
                         : Colors.white),
@@ -149,11 +152,15 @@ class _MyClockState extends State<MyClock> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.model.temperatureString),
-                      Text(
-                          "(${widget.model.lowString} - ${widget.model.highString})"),
-                      Text(widget.model.weatherString),
                       Text(widget.model.location),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                              "${widget.model.temperatureString} (${widget.model.lowString} - ${widget.model.highString}) "),
+                          WeatherIcon(widget.model.weatherCondition),
+                        ],
+                      ),
                     ],
                   ),
                 ),
