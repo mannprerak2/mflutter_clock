@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
-import 'package:my_clock/am_pm_indicator.dart';
-import 'package:my_clock/backgroud_animation.dart';
-import 'package:my_clock/digit.dart';
-import 'package:my_clock/time_model.dart';
-import 'package:my_clock/weather_icon.dart';
+import 'package:my_clock/src/am_pm_indicator.dart';
+import 'package:my_clock/src/backgroud_animation.dart';
+import 'package:my_clock/src/digit.dart';
+import 'package:my_clock/src/time_model.dart';
+import 'package:my_clock/src/weather_icon.dart';
 import 'package:provider/provider.dart';
 
 class MyClock extends StatefulWidget {
   static Color darkBlue = Color(0xFF001a33);
   static Color lessDarkBlue = Color(0xFF004280);
-  static Color backgroudPatternBlue = Color(0x05004280);
+  static Color backgroudPatternBlue = Color(0x5004280);
   static Color backgroudCirclePatternBlue = Color(0x10004280);
   static Color backgroudPatternBlueDark = Color(0x05FFFFFF);
   static Color backgroudCirclePatternBlueDark = Color(0x10FFFFFF);
@@ -33,9 +33,10 @@ class _MyClockState extends State<MyClock> {
   void initState() {
     super.initState();
     widget.model.addListener(_updateModel);
-
     //because context is required by provider..
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // initial model params
+      widget.model.is24HourFormat = false;
       _updateTime();
     });
   }
@@ -92,6 +93,7 @@ class _MyClockState extends State<MyClock> {
               right: 0,
               child: BackgroundAnimation(),
             ),
+            // Clock widget
             Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,

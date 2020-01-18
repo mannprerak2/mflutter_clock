@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:my_clock/my_clock.dart';
+import 'package:my_clock/src/my_clock.dart';
 
 class BackgroundAnimation extends StatefulWidget {
   @override
@@ -92,8 +92,8 @@ class BackgroudPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (var offset in points) {
-      canvas.drawCircle(getOffset(offset, size), 10, paintCircle);
+    for (int i = 0; i < points.length; i++) {
+      canvas.drawCircle(getOffset(points[i], size), 10, paintCircle);
     }
 
     for (int i = 3; i < points.length; i += 3) {

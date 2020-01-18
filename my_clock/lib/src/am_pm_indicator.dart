@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_clock/digit.dart';
-import 'package:my_clock/time_model.dart';
+import 'package:my_clock/src/digit.dart';
+import 'package:my_clock/src/time_model.dart';
 import 'package:provider/provider.dart';
 
 class AmPmIndicator extends StatelessWidget {
@@ -16,11 +16,11 @@ class AmPmIndicator extends StatelessWidget {
           children: <Widget>[
             Selector<TimeModel, bool>(
               selector: (_, b) => b.isPm,
-              builder: (_, b, child) => SizedBox(
+              builder: (_, isPm, child) => SizedBox(
                 width: MediaQuery.of(context).size.width / 10,
                 child: Digit(
                   null,
-                  simpleString: b ? 'P' : 'A',
+                  simpleString: isPm ? 'P' : 'A',
                 ),
               ),
             ),

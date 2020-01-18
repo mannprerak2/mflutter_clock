@@ -62,8 +62,21 @@ class TimeModel extends ChangeNotifier {
 
   void updateTime(DateTime d, bool is24hrFormat) {
     isPm = d.hour > 11;
-    h1 = (is24hrFormat && d.hour > 12) ? d.hour ~/ 10 : (d.hour - 12) ~/ 10;
-    h2 = (is24hrFormat && d.hour > 12) ? d.hour % 10 : (d.hour - 12) % 10;
+    if (is24hrFormat) {
+      h1 = d.hour ~/ 10;
+      h2 = d.hour % 10;
+    } else {
+      if (d.hour > 12) {
+        h1 = (d.hour - 12) ~/ 10;
+        h2 = (d.hour - 12) % 10;
+      } else if (d.hour == 0) {
+        h1 = 1;
+        h2 = 2;
+      } else {
+        h1 = d.hour ~/ 10;
+        h2 = d.hour % 10;
+      }
+    }
     m1 = d.minute ~/ 10;
     m2 = d.minute % 10;
     s1 = d.second ~/ 10;
