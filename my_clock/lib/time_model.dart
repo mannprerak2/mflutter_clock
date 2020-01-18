@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class TimeModel extends ChangeNotifier {
   int _h1 = 0, _h2 = 0, _m1 = 0, _m2 = 0, _s1 = 0, _s2 = 0;
+  bool _isPm = false;
 
   int get h1 => _h1;
   set h1(int a) {
@@ -51,9 +52,18 @@ class TimeModel extends ChangeNotifier {
     }
   }
 
-  void updateTime(DateTime d) {
-    h1 = d.hour ~/ 10;
-    h2 = d.hour % 10;
+  get isPm => _isPm;
+  set isPm(bool a) {
+    if (a != _isPm) {
+      _isPm = a;
+      notifyListeners();
+    }
+  }
+
+  void updateTime(DateTime d, bool is24hrFormat) {
+    isPm = d.hour > 11;
+    h1 = (is24hrFormat && d.hour > 12) ? d.hour ~/ 10 : (d.hour - 12) ~/ 10;
+    h2 = (is24hrFormat && d.hour > 12) ? d.hour % 10 : (d.hour - 12) % 10;
     m1 = d.minute ~/ 10;
     m2 = d.minute % 10;
     s1 = d.second ~/ 10;

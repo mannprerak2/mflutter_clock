@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
+import 'package:my_clock/am_pm_indicator.dart';
 import 'package:my_clock/backgroud_animation.dart';
 import 'package:my_clock/digit.dart';
 import 'package:my_clock/time_model.dart';
@@ -27,13 +28,11 @@ class MyClock extends StatefulWidget {
 class _MyClockState extends State<MyClock> {
   DateTime _dateTime = DateTime.now();
   Timer _timer;
-  int oh1, oh2, om1, om2;
+
   @override
   void initState() {
     super.initState();
     widget.model.addListener(_updateModel);
-
-    _updateModel();
 
     //because context is required by provider..
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -58,9 +57,7 @@ class _MyClockState extends State<MyClock> {
     super.dispose();
   }
 
-  void _updateModel() {
-    setState(() {});
-  }
+  void _updateModel() => setState(() {});
 
   void _updateTime() {
     _dateTime = DateTime.now();
@@ -69,9 +66,9 @@ class _MyClockState extends State<MyClock> {
       Duration(seconds: 1) - Duration(milliseconds: _dateTime.millisecond),
       _updateTime,
     );
-
     // update digits now
-    Provider.of<TimeModel>(context, listen: false).updateTime(_dateTime);
+    Provider.of<TimeModel>(context, listen: false)
+        .updateTime(_dateTime, widget.model.is24HourFormat);
   }
 
   @override
@@ -111,13 +108,23 @@ class _MyClockState extends State<MyClock> {
                 ),
                 Expanded(flex: 2, child: Digit((_, model) => model.m1)),
                 Expanded(flex: 2, child: Digit((_, model) => model.m2)),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 20,
-                  child: Digit((_, model) => model.s1),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 20,
-                  child: Digit((_, model) => model.s2),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 20,
+                          child: Digit((_, model) => model.s1),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 20,
+                          child: Digit((_, model) => model.s2),
+                        ),
+                      ],
+                    ),
+                    AmPmIndicator(!widget.model.is24HourFormat),
+                  ],
                 ),
               ],
             ),
