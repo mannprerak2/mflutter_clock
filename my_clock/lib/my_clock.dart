@@ -8,27 +8,13 @@ import 'package:my_clock/time_model.dart';
 import 'package:my_clock/weather_icon.dart';
 import 'package:provider/provider.dart';
 
-enum _Element {
-  background,
-  text,
-  shadow,
-}
-
-final _lightTheme = {
-  _Element.background: Color(0xFF81B3FE),
-  _Element.text: Colors.white,
-  _Element.shadow: Colors.black,
-};
-
-final _darkTheme = {
-  _Element.background: Colors.black,
-  _Element.text: Colors.white,
-  _Element.shadow: Color(0xFF174EA6),
-};
-
 class MyClock extends StatefulWidget {
   static Color darkBlue = Color(0xFF001a33);
   static Color lessDarkBlue = Color(0xFF004280);
+  static Color backgroudPatternBlue = Color(0x05004280);
+  static Color backgroudCirclePatternBlue = Color(0x10004280);
+  static Color backgroudPatternBlueDark = Color(0x05FFFFFF);
+  static Color backgroudCirclePatternBlueDark = Color(0x10FFFFFF);
   final ClockModel model;
   const MyClock(
     this.model, {
@@ -102,7 +88,13 @@ class _MyClockState extends State<MyClock> {
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            BackgroundAnimation(),
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              right: 0,
+              child: BackgroundAnimation(),
+            ),
             Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
