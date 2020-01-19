@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:my_clock/src/time_model.dart';
 import 'package:my_clock/src/my_clock.dart';
 import 'package:provider/provider.dart';
+// TODO: submit project, screenshot, video
 
 void main() {
   if (!kIsWeb && Platform.isMacOS) {
@@ -16,7 +17,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_)=> TimeModel(),
+          create: (_) => TimeModel(),
         )
       ],
       child: ClockCustomizer((ClockModel model) => MyClock(model)),

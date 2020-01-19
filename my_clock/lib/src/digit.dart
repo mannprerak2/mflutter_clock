@@ -63,9 +63,9 @@ class _DigitState extends State<Digit> {
               height: _image.height.toDouble(),
               child: widget.simpleString != null
                   ? CustomPaint(
-                        painter: DigitPainter(_image, widget.simpleString,
-                            MediaQuery.of(context).size.width),
-                      )
+                      painter: DigitPainter(_image, widget.simpleString,
+                          MediaQuery.of(context).size.width),
+                    )
                   : Selector<TimeModel, int>(
                       selector: widget.selector,
                       builder: (_, digit, child) => CustomPaint(

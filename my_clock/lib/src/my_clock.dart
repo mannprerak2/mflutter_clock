@@ -8,6 +8,7 @@ import 'package:my_clock/src/digit.dart';
 import 'package:my_clock/src/time_model.dart';
 import 'package:my_clock/src/weather_icon.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class MyClock extends StatefulWidget {
   static Color darkBlue = Color(0xFF001a33);
@@ -17,6 +18,8 @@ class MyClock extends StatefulWidget {
   static Color backgroudPatternBlueDark = Color(0x05FFFFFF);
   static Color backgroudCirclePatternBlueDark = Color(0x10FFFFFF);
   final ClockModel model;
+  static DateTime dateTime = DateTime.now();
+
   const MyClock(
     this.model, {
     Key key,
@@ -26,7 +29,6 @@ class MyClock extends StatefulWidget {
 }
 
 class _MyClockState extends State<MyClock> {
-  DateTime _dateTime = DateTime.now();
   Timer _timer;
 
   @override
@@ -61,15 +63,16 @@ class _MyClockState extends State<MyClock> {
   void _updateModel() => setState(() {});
 
   void _updateTime() {
-    _dateTime = DateTime.now();
+    MyClock.dateTime = DateTime.now();
     //update once a second
     _timer = Timer(
-      Duration(seconds: 1) - Duration(milliseconds: _dateTime.millisecond),
+      Duration(seconds: 1) -
+          Duration(milliseconds: MyClock.dateTime.millisecond),
       _updateTime,
     );
     // update digits now
     Provider.of<TimeModel>(context, listen: false)
-        .updateTime(_dateTime, widget.model.is24HourFormat);
+        .updateTime(MyClock.dateTime, widget.model.is24HourFormat);
   }
 
   @override
@@ -93,74 +96,132 @@ class _MyClockState extends State<MyClock> {
               right: 0,
               child: BackgroundAnimation(),
             ),
-            // Clock widget
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(flex: 2, child: Digit((_, model) => model.h1)),
-                Expanded(flex: 2, child: Digit((_, model) => model.h2)),
-                Expanded(
-                  flex: 1,
-                  child: Digit(
-                    null,
-                    simpleString: ":",
-                  ),
-                ),
-                Expanded(flex: 2, child: Digit((_, model) => model.m1)),
-                Expanded(flex: 2, child: Digit((_, model) => model.m2)),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 20,
-                          child: Digit((_, model) => model.s1),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 20,
-                          child: Digit((_, model) => model.s2),
-                        ),
-                      ],
-                    ),
-                    AmPmIndicator(!widget.model.is24HourFormat),
-                  ],
-                ),
-              ],
-            ),
+            TimeWidget(widget: widget),
             Positioned(
               left: 0,
               bottom: 0,
-              child: DefaultTextStyle(
-                style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? MyClock.lessDarkBlue
-                        : Colors.white),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.model.location),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                              "${widget.model.temperatureString} (${widget.model.lowString} - ${widget.model.highString}) "),
-                          WeatherIcon(widget.model.weatherCondition),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+              child: WeatherWidget(
+                widget: widget,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+class WeatherWidget extends StatelessWidget {
+  const WeatherWidget({
+    Key key,
+    @required this.widget,
+  }) : super(key: key);
+
+  final MyClock widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle(
+      style: TextStyle(
+          fontWeight: FontWeight.w900,
+          color: Theme.of(context).brightness == Brightness.light
+              ? MyClock.lessDarkBlue
+              : Colors.white),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.model.location),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Semantics(
+                  enabled: true,
+                  label: 'Temperature is ${widget.model.temperatureString}',
+                  readOnly: true,
+                  container: true,
+                  child: Text(
+                      "${widget.model.temperatureString} (${widget.model.lowString} - ${widget.model.highString}) "),
+                ),
+                Semantics(
+                  enabled: true,
+                  label:
+                      'Weather is ${widget.model.weatherCondition.toString().split('.').last}',
+                  readOnly: true,
+                  container: true,
+                  child: WeatherIcon(widget.model.weatherCondition),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TimeWidget extends StatelessWidget {
+  const TimeWidget({
+    Key key,
+    @required this.widget,
+  }) : super(key: key);
+
+  final MyClock widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      enabled: true,
+      label: getTimeLabel(widget),
+      readOnly: true,
+      container: true,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(flex: 2, child: Digit((_, model) => model.h1)),
+          Expanded(flex: 2, child: Digit((_, model) => model.h2)),
+          Expanded(
+            flex: 1,
+            child: Digit(
+              null,
+              simpleString: ":",
+            ),
+          ),
+          Expanded(flex: 2, child: Digit((_, model) => model.m1)),
+          Expanded(flex: 2, child: Digit((_, model) => model.m2)),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 20,
+                    child: Digit((_, model) => model.s1),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 20,
+                    child: Digit((_, model) => model.s2),
+                  ),
+                ],
+              ),
+              AmPmIndicator(!widget.model.is24HourFormat),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String getTimeLabel(MyClock widget) {
+    DateFormat formatter;
+    if (widget.model.is24HourFormat) {
+      formatter = DateFormat('Hms');
+    } else {
+      formatter = DateFormat('jms');
+    }
+    return 'Time is ${formatter.format(MyClock.dateTime)}';
   }
 }
