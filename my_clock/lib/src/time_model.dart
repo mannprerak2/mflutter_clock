@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// Single time change notifier
+/// to be used with Selector Widget on individual variables of interest
 class TimeModel extends ChangeNotifier {
   int _h1 = 0, _h2 = 0, _m1 = 0, _m2 = 0, _s1 = 0, _s2 = 0;
   bool _isPm = false;
+  int _day = 0;
 
   int get h1 => _h1;
   set h1(int a) {
@@ -60,8 +63,17 @@ class TimeModel extends ChangeNotifier {
     }
   }
 
+  get day => _day;
+  set day(int d) {
+    if (_day != d) {
+      _day = d;
+      notifyListeners();
+    }
+  }
+
   void updateTime(DateTime d, bool is24hrFormat) {
     isPm = d.hour > 11;
+    day = d.day;
     if (is24hrFormat) {
       h1 = d.hour ~/ 10;
       h2 = d.hour % 10;

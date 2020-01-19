@@ -3,6 +3,7 @@ import 'package:my_clock/src/digit.dart';
 import 'package:my_clock/src/time_model.dart';
 import 'package:provider/provider.dart';
 
+/// Shows AM/PM if format isn't 24 hr
 class AmPmIndicator extends StatelessWidget {
   final bool show;
 

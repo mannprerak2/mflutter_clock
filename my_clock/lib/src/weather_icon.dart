@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/model.dart';
-import 'package:my_clock/src/my_clock.dart';
+import 'package:my_clock/src/constants.dart';
 
 class WeatherIcon extends StatelessWidget {
   final WeatherCondition weatherCondition;
@@ -10,8 +10,8 @@ class WeatherIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color color = Theme.of(context).brightness == Brightness.light
-        ? MyClock.lessDarkBlueWithOpacity
-        : Colors.white70;
+        ? Constants.lessDarkBlueWithOpacity
+        : Constants.opacityWhite;
     switch (weatherCondition) {
       case WeatherCondition.cloudy:
         return Icon(

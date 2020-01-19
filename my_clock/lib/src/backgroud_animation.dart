@@ -2,8 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:my_clock/src/my_clock.dart';
-
+import 'package:my_clock/src/constants.dart';
+/// Show random connected nodes animation in background
 class BackgroundAnimation extends StatefulWidget {
   @override
   _BackgroundAnimationState createState() => _BackgroundAnimationState();
@@ -55,11 +55,11 @@ class _BackgroundAnimationState extends State<BackgroundAnimation>
         painter: BackgroudPainter(
       animations,
       Theme.of(context).brightness == Brightness.light
-          ? MyClock.backgroudPatternBlue
-          : MyClock.backgroudPatternBlueDark,
+          ? Constants.backgroudPatternBlue
+          : Constants.backgroudPatternBlueDark,
       Theme.of(context).brightness == Brightness.light
-          ? MyClock.backgroudCirclePatternBlue
-          : MyClock.backgroudCirclePatternBlueDark,
+          ? Constants.backgroudCirclePatternBlue
+          : Constants.backgroudCirclePatternBlueDark,
     ));
   }
 

@@ -9,15 +9,17 @@ import 'package:my_clock/src/time_model.dart';
 import 'package:my_clock/src/weather_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:my_clock/src/constants.dart';
 
+/// Root Clock Widget (below ClockCustomiser)
 class MyClock extends StatefulWidget {
-  static Color darkBlue = Color(0xFF001a33);
-  static Color lessDarkBlue = Color(0xFF004280);
-  static Color lessDarkBlueWithOpacity = Color(0xB0004280);
-  static Color backgroudPatternBlue = Color(0x5004280);
-  static Color backgroudCirclePatternBlue = Color(0x10004280);
-  static Color backgroudPatternBlueDark = Color(0x05FFFFFF);
-  static Color backgroudCirclePatternBlueDark = Color(0x10FFFFFF);
+  // static Color darkBlue = Color(0xFF001a33);
+  // static Color lessDarkBlue = Color(0xFF004280);
+  // static Color lessDarkBlueWithOpacity = Color(0xB0004280);
+  // static Color backgroudPatternBlue = Color(0x5004280);
+  // static Color backgroudCirclePatternBlue = Color(0x10004280);
+  // static Color backgroudPatternBlueDark = Color(0x05FFFFFF);
+  // static Color backgroudCirclePatternBlueDark = Color(0x10FFFFFF);
   final ClockModel model;
   static DateTime dateTime = DateTime.now();
 
@@ -81,12 +83,12 @@ class _MyClockState extends State<MyClock> {
     return DefaultTextStyle(
       style: TextStyle(
           color: Theme.of(context).brightness == Brightness.light
-              ? MyClock.lessDarkBlue
-              : Colors.white),
+              ? Constants.lessDarkBlue
+              : Constants.digitColor),
       child: Container(
         color: Theme.of(context).brightness == Brightness.light
-            ? Colors.white
-            : MyClock.darkBlue,
+            ? Constants.digitColor
+            : Constants.darkBlue,
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
@@ -121,16 +123,22 @@ class DateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
-        style: TextStyle(
-            fontSize: MediaQuery.of(context).size.width / 20,
-            fontWeight: FontWeight.w900,
-            color: Theme.of(context).brightness == Brightness.light
-                ? MyClock.lessDarkBlueWithOpacity
-                : Colors.white60),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(DateFormat('E, d MMM').format(MyClock.dateTime)),
-        ));
+      style: TextStyle(
+          fontSize: MediaQuery.of(context).size.width / 20,
+          fontWeight: FontWeight.w900,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Constants.lessDarkBlueWithOpacity
+              : Constants.opacityWhite),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Selector<TimeModel, int>(
+          selector: (_, model) => model.day,
+          builder: (_, day, child) {
+            return Text(DateFormat('E, d MMM').format(MyClock.dateTime));
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -149,8 +157,8 @@ class WeatherWidget extends StatelessWidget {
           fontSize: MediaQuery.of(context).size.width / 32,
           fontWeight: FontWeight.w900,
           color: Theme.of(context).brightness == Brightness.light
-              ? MyClock.lessDarkBlueWithOpacity
-              : Colors.white60),
+              ? Constants.lessDarkBlueWithOpacity
+              : Constants.opacityWhite),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -164,8 +172,7 @@ class WeatherWidget extends StatelessWidget {
                   label: 'Temperature is ${widget.model.temperatureString}',
                   readOnly: true,
                   container: true,
-                  child: Text(
-                      "${widget.model.temperatureString} "),
+                  child: Text("${widget.model.temperatureString} "),
                 ),
                 Semantics(
                   enabled: true,
