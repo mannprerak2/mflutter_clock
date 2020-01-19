@@ -10,8 +10,8 @@ class WeatherIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color color = Theme.of(context).brightness == Brightness.light
-        ? MyClock.lessDarkBlue
-        : Colors.white;
+        ? MyClock.lessDarkBlueWithOpacity
+        : Colors.white70;
     switch (weatherCondition) {
       case WeatherCondition.cloudy:
         return Icon(

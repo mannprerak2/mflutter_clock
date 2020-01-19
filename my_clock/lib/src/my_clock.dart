@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 class MyClock extends StatefulWidget {
   static Color darkBlue = Color(0xFF001a33);
   static Color lessDarkBlue = Color(0xFF004280);
+  static Color lessDarkBlueWithOpacity = Color(0xB0004280);
   static Color backgroudPatternBlue = Color(0x5004280);
   static Color backgroudCirclePatternBlue = Color(0x10004280);
   static Color backgroudPatternBlueDark = Color(0x05FFFFFF);
@@ -90,24 +91,46 @@ class _MyClockState extends State<MyClock> {
           alignment: Alignment.center,
           children: <Widget>[
             Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              right: 0,
-              child: BackgroundAnimation(),
-            ),
+                left: 0,
+                top: 0,
+                bottom: 0,
+                right: 0,
+                child: BackgroundAnimation()),
             TimeWidget(widget: widget),
             Positioned(
               left: 0,
               bottom: 0,
-              child: WeatherWidget(
-                widget: widget,
-              ),
+              child: WeatherWidget(widget: widget),
+            ),
+            Positioned(
+              top: 0,
+              child: DateWidget(),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+class DateWidget extends StatelessWidget {
+  const DateWidget({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle(
+        style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width / 20,
+            fontWeight: FontWeight.w900,
+            color: Theme.of(context).brightness == Brightness.light
+                ? MyClock.lessDarkBlueWithOpacity
+                : Colors.white60),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(DateFormat('E, d MMM').format(MyClock.dateTime)),
+        ));
   }
 }
 
@@ -123,16 +146,16 @@ class WeatherWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTextStyle(
       style: TextStyle(
+          fontSize: MediaQuery.of(context).size.width / 32,
           fontWeight: FontWeight.w900,
           color: Theme.of(context).brightness == Brightness.light
-              ? MyClock.lessDarkBlue
-              : Colors.white),
+              ? MyClock.lessDarkBlueWithOpacity
+              : Colors.white60),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.model.location),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -142,7 +165,7 @@ class WeatherWidget extends StatelessWidget {
                   readOnly: true,
                   container: true,
                   child: Text(
-                      "${widget.model.temperatureString} (${widget.model.lowString} - ${widget.model.highString}) "),
+                      "${widget.model.temperatureString} "),
                 ),
                 Semantics(
                   enabled: true,
@@ -154,6 +177,7 @@ class WeatherWidget extends StatelessWidget {
                 ),
               ],
             ),
+            Text(widget.model.location),
           ],
         ),
       ),
